@@ -16,7 +16,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/jonathanrainer/operator-demo
+    repoURL: https://my-repo-name.com
     path: apps
     targetRevision: main
   destination:
