@@ -7,15 +7,13 @@ on:
         description: 'GraphRef (e.g., my-graph@main)'
         required: true
         type: string
-      repoUrl:
-        description: 'Repository URL (e.g., https://github.com/username/repo-name)'
-        required: true
-        type: string
 
 jobs:
   setup:
     name: "Setup Repository"
     runs-on: ubuntu-latest
+    env:
+      REPO_URL: ${{ github.server_url }}/${{ github.repository }}
     permissions:
       contents: write
       pull-requests: write
@@ -27,19 +25,11 @@ jobs:
       
       - name: Validate inputs
         run: |
-          echo "Setting up repository with:"
-          echo "  GraphRef: ${{ github.event.inputs.graphRef }}"
-          echo "  Repository URL: ${{ github.event.inputs.repoUrl }}"
+          echo "Setting up repository with GraphRef: ${{ github.event.inputs.graphRef }}"
           
           # Validate graphRef format (basic validation)
           if [[ ! "${{ github.event.inputs.graphRef }}" =~ ^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+$ ]]; then
             echo "Error: graphRef must be in format 'graph-name@variant' (e.g., 'my-graph@main')"
-            exit 1
-          fi
-          
-          # Validate repoUrl format (basic validation)
-          if [[ ! "${{ github.event.inputs.repoUrl }}" =~ ^https://github\.com/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ ]]; then
-            echo "Error: repoUrl must be a valid GitHub repository URL (e.g., 'https://github.com/username/repo-name')"
             exit 1
           fi
 
@@ -54,19 +44,19 @@ jobs:
           echo "Updating repository URLs in configuration files..."
           
           # Update bootstrap.yaml
-          yq eval '(select(.kind == "Application") | .spec.source.repoURL) = "${{ github.event.inputs.repoUrl }}"' -i bootstrap.yaml
+          yq eval '(select(.kind == "Application") | .spec.source.repoURL) = "${{ env.REPO_URL }}"' -i bootstrap.yaml
           echo "✓ Updated bootstrap.yaml"
           
           # Update apps/reviews.yaml
-          yq eval '.spec.source.repoURL = "${{ github.event.inputs.repoUrl }}"' -i apps/reviews.yaml
+          yq eval '.spec.source.repoURL = "${{ env.REPO_URL }}"' -i apps/reviews.yaml
           echo "✓ Updated apps/reviews.yaml"
           
           # Update apps/retail-supergraph.yaml
-          yq eval '.spec.source.repoURL = "${{ github.event.inputs.repoUrl }}"' -i apps/retail-supergraph.yaml
+          yq eval '.spec.source.repoURL = "${{ env.REPO_URL }}"' -i apps/retail-supergraph.yaml
           echo "✓ Updated apps/retail-supergraph.yaml"
           
           # Update apps/products.yaml
-          yq eval '.spec.source.repoURL = "${{ github.event.inputs.repoUrl }}"' -i apps/products.yaml
+          yq eval '.spec.source.repoURL = "${{ env.REPO_URL }}"' -i apps/products.yaml
           echo "✓ Updated apps/products.yaml"
 
       - name: Verify changes
@@ -89,7 +79,7 @@ jobs:
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Setup repository: Update graphRef to '${{ github.event.inputs.graphRef }}' and repoUrl to '${{ github.event.inputs.repoUrl }}'"
+          commit-message: "Setup repository: Update graphRef to '${{ github.event.inputs.graphRef }}' and repoUrl to '${{ env.REPO_URL }}'"
           title: "🚀 Setup Repository Configuration"
           body: |
             ## Repository Setup Complete!
@@ -98,7 +88,7 @@ jobs:
 
             ### Configuration Applied:
             - **GraphRef:** `${{ github.event.inputs.graphRef }}`
-            - **Repository URL:** `${{ github.event.inputs.repoUrl }}`
+            - **Repository URL:** `${{ env.REPO_URL }}` (auto-detected)
 
             ### Files Updated:
             - `retail-supergraph/supergraph_schema.yaml` - Updated graphRef
@@ -126,7 +116,7 @@ jobs:
             echo ""
             echo "Repository configured with:"
             echo "  • GraphRef: ${{ github.event.inputs.graphRef }}"
-            echo "  • Repository URL: ${{ github.event.inputs.repoUrl }}"
+            echo "  • Repository URL: ${{ env.REPO_URL }} (auto-detected)"
           else
             echo "ℹ️  No changes needed - repository is already configured with these values."
           fi
