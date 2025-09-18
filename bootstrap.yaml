@@ -16,6 +16,6 @@ spec:
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
-    namespace: operator-demo
+    namespace: argocd
   syncPolicy:
     automated: {}
