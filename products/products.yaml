@@ -15,7 +15,7 @@ spec:
           import: ["@key"]
         )
         @link(
-          url: "https://specs.apollo.dev/connect/v0.2"
+          url: "https://specs.apollo.dev/connect/v0.1"
           import: ["@connect", "@source"]
         )
         # A @source directive defines a shared data source for multiple connectors.

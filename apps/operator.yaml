@@ -8,7 +8,7 @@ spec:
   source:
     chart: operator-chart
     repoURL: registry-1.docker.io/apollograph
-    targetRevision: "*"
+    targetRevision: "0.5.0-rc.1"
     helm:
       releaseName: apollo-operator
       valuesObject:
