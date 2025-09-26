@@ -5,6 +5,14 @@ metadata:
   namespace: argocd
 spec:
   project: default
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+        - /spec/names/shortNames
+        - /spec/names/categories
+      jqPathExpressions:
+        - .spec.versions[]?.additionalPrinterColumns
   source:
     chart: operator-chart
     repoURL: registry-1.docker.io/apollograph
