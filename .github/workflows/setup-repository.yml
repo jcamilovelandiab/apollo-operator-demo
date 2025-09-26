@@ -65,7 +65,7 @@ jobs:
           echo "Updating container image references..."
           
           # Update reviews/deployment.yaml
-          yq eval '(.spec.template.spec.containers[] | select(.name == "reviews") | .image) = "${{ env.CONTAINER_IMAGE }}"' -i reviews/deployment.yaml
+          yq eval '(select(.kind == "Deployment") | .spec.template.spec.containers[] | select(.name == "reviews") | .image) = "${{ env.CONTAINER_IMAGE }}"' -i reviews/deployment.yaml
           echo "✓ Updated reviews/deployment.yaml"
           
           # Update reviews/reviews.yaml
@@ -86,7 +86,7 @@ jobs:
           echo "apps/products.yaml: $(yq eval '.spec.source.repoURL' apps/products.yaml)"
           echo ""
           echo "=== Container Image ==="
-          echo "reviews/deployment.yaml: $(yq eval '.spec.template.spec.containers[] | select(.name == "reviews") | .image' reviews/deployment.yaml)"
+          echo "reviews/deployment.yaml: $(yq eval 'select(.kind == "Deployment") | .spec.template.spec.containers[] | select(.name == "reviews") | .image' reviews/deployment.yaml)"
           echo "reviews/reviews.yaml: $(yq eval '.spec.schema.ociImage.reference' reviews/reviews.yaml)"
           echo ""
           echo "Setup completed successfully! 🎉"
