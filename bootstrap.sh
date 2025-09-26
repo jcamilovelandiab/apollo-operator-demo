@@ -26,7 +26,7 @@ echo ""
 echo "Patching ArgoCD Resources"
 kubectl patch -n argocd cm argocd-cm -p '{ "data": { "timeout.reconciliation": "5s", "timeout.reconciliation.jitter": "1s" }}'
 kubectl rollout restart -n argocd statefulset argocd-application-controller
-kubectl rollout status statefulset argocd-application-controller
+kubectl rollout status -n argocd statefulset argocd-application-controller
 read -rp "Press enter to continue"
 echo ""
 

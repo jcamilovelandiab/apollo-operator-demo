@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     path: reviews
-    repoURL: https://my-repo-name.com
+    repoURL: https://github.com/example/repo
     directory:
       include: "*.yaml"
   destination:

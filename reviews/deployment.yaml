@@ -30,7 +30,7 @@ spec:
         app: reviews
     spec:
       containers:
-      - image: ghcr.io/jonathanrainer/reviews:latest
+      - image: ghcr.io/example/reviews:latest
         name: reviews
         ports:
         - containerPort: 4000

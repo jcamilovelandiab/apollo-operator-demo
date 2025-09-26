@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+      CONTAINER_IMAGE: ghcr.io/${{ github.repository_owner }}/reviews:latest
     permissions:
       contents: write
       pull-requests: write
@@ -59,6 +60,18 @@ jobs:
           yq eval '.spec.source.repoURL = "${{ env.REPO_URL }}"' -i apps/products.yaml
           echo "✓ Updated apps/products.yaml"
 
+      - name: Update container image references
+        run: |
+          echo "Updating container image references..."
+          
+          # Update reviews/deployment.yaml
+          yq eval '(.spec.template.spec.containers[] | select(.name == "reviews") | .image) = "${{ env.CONTAINER_IMAGE }}"' -i reviews/deployment.yaml
+          echo "✓ Updated reviews/deployment.yaml"
+          
+          # Update reviews/reviews.yaml
+          yq eval '.spec.schema.ociImage.reference = "${{ env.CONTAINER_IMAGE }}"' -i reviews/reviews.yaml
+          echo "✓ Updated reviews/reviews.yaml"
+
       - name: Verify changes
         run: |
           echo "Verifying all changes were applied correctly..."
@@ -72,6 +85,10 @@ jobs:
           echo "apps/retail-supergraph.yaml: $(yq eval '.spec.source.repoURL' apps/retail-supergraph.yaml)"
           echo "apps/products.yaml: $(yq eval '.spec.source.repoURL' apps/products.yaml)"
           echo ""
+          echo "=== Container Image ==="
+          echo "reviews/deployment.yaml: $(yq eval '.spec.template.spec.containers[] | select(.name == "reviews") | .image' reviews/deployment.yaml)"
+          echo "reviews/reviews.yaml: $(yq eval '.spec.schema.ociImage.reference' reviews/reviews.yaml)"
+          echo ""
           echo "Setup completed successfully! 🎉"
 
       - name: Create pull request with changes
@@ -79,7 +96,7 @@ jobs:
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Setup repository: Update graphRef to '${{ github.event.inputs.graphRef }}' and repoUrl to '${{ env.REPO_URL }}'"
+          commit-message: "Setup repository: Update graphRef to '${{ github.event.inputs.graphRef }}', repoUrl to '${{ env.REPO_URL }}', and container image to '${{ env.CONTAINER_IMAGE }}'"
           title: "🚀 Setup Repository Configuration"
           body: |
             ## Repository Setup Complete!
@@ -89,6 +106,7 @@ jobs:
             ### Configuration Applied:
             - **GraphRef:** `${{ github.event.inputs.graphRef }}`
             - **Repository URL:** `${{ env.REPO_URL }}` (auto-detected)
+            - **Container Image:** `${{ env.CONTAINER_IMAGE }}` (auto-detected)
 
             ### Files Updated:
             - `retail-supergraph/supergraph_schema.yaml` - Updated graphRef
@@ -96,6 +114,8 @@ jobs:
             - `apps/reviews.yaml` - Updated repository URL
             - `apps/retail-supergraph.yaml` - Updated repository URL
             - `apps/products.yaml` - Updated repository URL
+            - `reviews/deployment.yaml` - Updated container image reference
+            - `reviews/reviews.yaml` - Updated container image reference
 
             ### Next Steps:
             1. Review the changes in this pull request
