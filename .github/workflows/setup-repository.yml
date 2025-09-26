@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       graphRef:
-        description: 'GraphRef (e.g., my-graph@main)'
+        description: 'GraphRef (e.g., my-graph@current)'
         required: true
         type: string
 
@@ -30,7 +30,7 @@ jobs:
           
           # Validate graphRef format (basic validation)
           if [[ ! "${{ github.event.inputs.graphRef }}" =~ ^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+$ ]]; then
-            echo "Error: graphRef must be in format 'graph-name@variant' (e.g., 'my-graph@main')"
+            echo "Error: graphRef must be in format 'graph-name@variant' (e.g., 'my-graph@current')"
             exit 1
           fi
 
