@@ -24,7 +24,7 @@ _Make sure to run this in the folder the checked out repo is cloned into!_
 ### Creating API Keys
 
 ```shell
-rover api-key create <<ORG_NAME>> operator operator-workshop-key
+rover api-key create summit-2025-operator-workshop operator operator-workshop-key
 ```
 ```shell
 kubectl -n apollo-operator create secret generic --from-literal=APOLLO_KEY=<<YOUR_KEY>> apollo-api-key
