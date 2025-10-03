@@ -1,7 +1,7 @@
 apiVersion: apollographql.com/v1alpha2
 kind: Supergraph
 metadata:
-  name: retail
+  name: router-retail
 spec:
   replicas: 2
   schema:

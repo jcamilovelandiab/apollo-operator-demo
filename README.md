@@ -36,6 +36,12 @@ kubectl -n apollo-operator create secret generic --from-literal=APOLLO_KEY=<<YOU
 kubectl get pods -A
 ```
 
+### Retrieve ArgoCD Admin Password
+
+```shell
+kubectl -n argocd get secrets/argocd-initial-admin-secret --template='{{.data.password}}' | base64 -d
+```
+
 ### Access ArgoCD
 
 ```shell
@@ -45,7 +51,7 @@ kubectl -n argocd port-forward service/argocd-server 8080:80
 ### Access Sandbox
 
 ```shell
-kubectl -n apollo-operator port-forward service/retail 4000:4000
+kubectl -n apollo-operator port-forward service/retail 4000:80
 ```
 
 ### Get Operator Logs
